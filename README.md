@@ -201,11 +201,25 @@ go install github.com/dmitriy-fullstack-2010/telegram-mcp@latest
 
 ## Configuration
 
+### Credentials (.env)
+
+Keep your API credentials in a `.env` file instead of the MCP client config:
+
+1. Get the API ID and hash from [Telegram API](https://my.telegram.org/auth)
+2. Create `~/.telegram-mcp/.env` (Windows: `%USERPROFILE%\.telegram-mcp\.env`):
+
+   ```dotenv
+   TG_APP_ID=<your-api-id>
+   TG_API_HASH=<your-api-hash>
+   ```
+
+To use another location, set `TG_ENV_FILE=<path>` (this path is not a secret). Variables that are already set in the real environment take priority over the file. Keep this file private and never commit it.
+
 ### Authorization
 
 Before you can use the server, you need to connect to the Telegram API.
 
-1. Get the API ID and hash from [Telegram API](https://my.telegram.org/auth)
+1. Make sure the `.env` file above exists.
 2. Run the following command:
    > __Note:__
    > If you have 2FA enabled: add --password <2fa_password>
@@ -214,12 +228,12 @@ Before you can use the server, you need to connect to the Telegram API.
    > If you want to override existing session: add --new
 
    ```bash
-   telegram-mcp auth --app-id <your-api-id> --api-hash <your-api-hash> --phone <your-phone-number>
+   telegram-mcp auth --phone <your-phone-number>
    ```
 
    📩 Enter the code you received from Telegram to connect to the API.
 
-3. Done! Please give this project a ⭐️ to support its development.
+3. Done!
 
 ### Client Configuration
 
@@ -232,39 +246,17 @@ Example of Configuring Claude Desktop to recognize the Telegram MCP server.
    > __Note:__
    > You can also find claude_desktop_config.json inside the settings of Claude Desktop app
 
-2. Add the server configuration
-   
-   for Claude desktop:
+2. Add the server configuration (no secrets needed, they come from the `.env` file):
+
    ```json
     {
       "mcpServers": {
         "telegram": {
-          "command": "telegram-mcp",
-          "env": {
-            "TG_APP_ID": "<your-app-id>",
-            "TG_API_HASH": "<your-api-hash>",
-            "PATH": "<path_to_telegram-mcp_binary_dir>",
-            "HOME": "<path_to_your_home_directory"
-          }
+          "command": "telegram-mcp"
         }
       }
     }
    ```
-
-   for Cursor:
-    ```json
-    {
-      "mcpServers": {
-        "telegram-mcp": {
-          "command": "telegram-mcp",
-          "env": {
-            "TG_APP_ID": "<your-app-id>",
-            "TG_API_HASH": "<your-api-hash>"
-          }
-        }
-      }
-    }
-    ```
 
 ### JSON Schema Version
 

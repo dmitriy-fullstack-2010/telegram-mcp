@@ -37,6 +37,17 @@ func main() {
 	configDir := filepath.Join(homeDir, dir)
 	sesionPath := filepath.Join(configDir, "session.json")
 
+	// Credentials (TG_APP_ID, TG_API_HASH) are read from this file so they
+	// don't have to be stored in the MCP client config.
+	envPath := os.Getenv("TG_ENV_FILE")
+	if envPath == "" {
+		envPath = filepath.Join(configDir, ".env")
+	}
+
+	if err := loadEnvFile(envPath); err != nil {
+		log.Fatal().Err(err).Msg("Failed to load env file")
+	}
+
 	app := &cli.Command{
 		Name:  "telegram-mcp",
 		Usage: "Telegram MCP server",
