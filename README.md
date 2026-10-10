@@ -1,5 +1,3 @@
-[![](https://badge.mcpx.dev?type=server 'MCP Server')](https://github.com/punkpeye/awesome-mcp-servers?tab=readme-ov-file#communication)
-[![](https://img.shields.io/badge/OS_Agnostic-Works_Everywhere-purple)](https://github.com/dmitriy-fullstack-2010/telegram-mcp?tab=readme-ov-file#installation)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 # Telegram MCP server
@@ -7,273 +5,97 @@
 > [!NOTE]
 > This is a personal fork of [chaindead/telegram-mcp](https://github.com/chaindead/telegram-mcp). All credit for the original work goes to its author, [chaindead](https://github.com/chaindead). Distributed under the original MIT license (see [LICENSE](LICENSE)).
 
-The server is a bridge between the Telegram API and the AI assistants and is based on the [Model Context Protocol](https://modelcontextprotocol.io).
+The server is a bridge between the Telegram API and AI assistants and is based on the [Model Context Protocol](https://modelcontextprotocol.io). It talks only to Telegram, has no telemetry, and runs nothing else on your computer.
 
 > [!IMPORTANT]
 > Ensure that you have read and understood the [Telegram API Terms of Service](https://core.telegram.org/api/terms) before using this server.
 > Any misuse of the Telegram API may result in the suspension of your account.
 
 ## Table of Contents
-- [What is MCP?](#what-is-mcp)
 - [What does this server do?](#what-does-this-server-do)
-  - [Capabilities](#capabilities)
-  - [Prompt examples](#prompt-examples)
-    - [Message Management](#message-management)
-    - [Organization](#organization)
-    - [Communication](#communication)
-- [Installation](#installation)
-  - [Homebrew](#homebrew)
-  - [NPX](#npx)
-  - [From Releases](#from-releases)
-    - [MacOS](#macos)
-    - [Linux](#linux)
-    - [Windows](#windows)
-  - [From Source](#from-source)
-- [Configuration](#configuration)
-  - [Authorization](#authorization)
-  - [Client Configuration](#client-configuration)
-  - [JSON Schema Version](#json-schema-version)
-- [Star History](#star-history)
-
-## What is MCP?
-
-The Model Context Protocol (MCP) is a system that lets AI apps, like Claude Desktop or Cursor, connect to external tools and data sources. It gives a clear and safe way for AI assistants to work with local services and APIs while keeping the user in control.
+- [Setup (Windows)](#setup-windows)
+  - [1. Build](#1-build)
+  - [2. Add credentials](#2-add-credentials)
+  - [3. Log in to Telegram](#3-log-in-to-telegram)
+  - [4. Add to Claude Desktop](#4-add-to-claude-desktop)
+- [Security notes](#security-notes)
+- [Optional: JSON Schema Version](#optional-json-schema-version)
 
 ## What does this server do?
 
-### Capabilities
+Tools exposed to the AI assistant:
 
-- [x] Get current account information (`tool: tg_me`)
-- [x] List dialogs with optional unread filter (`tool: tg_dialogs`)
-- [x] Mark dialog as read (`tool: tg_read`)
-- [x] Retrieve messages from specific dialog (`tool: tg_dialog`)
-- [x] Send draft messages to any dialog (`tool: tg_send`)
+- `tg_me` — get current account information
+- `tg_dialogs` — list dialogs, optionally only unread ones
+- `tg_dialog` — read messages from a specific dialog
+- `tg_send` — save a **draft** message in a dialog (it never sends anything)
+- `tg_read` — mark a dialog as read
 
-### Prompt examples
-
-Here are some example prompts you can use with AI assistants:
-
-#### Message Management
-- "Check for any unread important messages in my Telegram"
+Example prompts:
 - "Summarize all my unread Telegram messages"
-- "Read and analyze my unread messages, prepare draft responses where needed"
-- "Check non-critical unread messages and give me a brief overview"
-
-#### Organization
-- "Analyze my Telegram dialogs and suggest a folder structure"
-- "Help me categorize my Telegram chats by importance"
-- "Find all work-related conversations and suggest how to organize them"
-
-#### Communication
-- "Monitor specific chat for updates about [topic]"
 - "Draft a polite response to the last message in [chat]"
 - "Check if there are any unanswered questions in my chats"
 
-## Installation
+## Setup (Windows)
 
-### Homebrew
+Requirements: [Go](https://go.dev/dl/) 1.24+ and [Claude Desktop](https://claude.ai/download).
 
-You can install a binary release on macOS/Linux using brew:
+### 1. Build
 
-```bash
-# Install
-brew install chaindead/tap/telegram-mcp
-
-# Update
-brew upgrade chaindead/tap/telegram-mcp
+```powershell
+git clone https://github.com/dmitriy-fullstack-2010/telegram-mcp.git C:\Projects\telegram-mcp
+cd C:\Projects\telegram-mcp
+go build -o telegram-mcp.exe .
 ```
 
-### NPX
+### 2. Add credentials
 
-You can run the latest version directly using npx (supports macOS, Linux, and Windows):
+Get an API ID and API hash at [my.telegram.org](https://my.telegram.org/auth) (API development tools), then create `%USERPROFILE%\.telegram-mcp\.env`:
 
-```bash
-npx -y @chaindead/telegram-mcp
+```dotenv
+TG_APP_ID=<your-api-id>
+TG_API_HASH=<your-api-hash>
 ```
 
-When using NPX, modify the standard commands and configuration as follows:
+Credentials live only in this file, not in the Claude config. Keep it private and never commit it. To use another location, set `TG_ENV_FILE=<path>`. Variables already set in the real environment take priority over the file.
 
-- [Authentication command](#authorization) becomes:
-```bash
-npx -y @chaindead/telegram-mcp auth ...
+### 3. Log in to Telegram
+
+Run once:
+
+```powershell
+C:\Projects\telegram-mcp\telegram-mcp.exe auth --phone +<your-phone-number>
 ```
 
-- [Claude MCP server configuration](#client-configuration) becomes:
+Enter the code Telegram sends to your Telegram app. Add `--password <2fa-password>` if you have two-step verification, or `--new` to replace an existing session. This creates `%USERPROFILE%\.telegram-mcp\session.json`.
+
+### 4. Add to Claude Desktop
+
+Open `%APPDATA%\Claude\claude_desktop_config.json` and add:
+
 ```json
 {
   "mcpServers": {
     "telegram": {
-      "command": "npx",
-      "args": ["-y", "@chaindead/telegram-mcp"],
-      "env": {
-        "TG_APP_ID": "<your-api-id>",
-        "TG_API_HASH": "<your-api-hash>"
-      }
+      "command": "C:/Projects/telegram-mcp/telegram-mcp.exe"
     }
   }
 }
 ```
 
-For complete setup instructions, see [Authorization](#authorization) and [Client Configuration](#client-configuration).
+If the file already has `mcpServers`, add only the `"telegram"` entry inside it. Then fully quit and reopen Claude Desktop and ask, for example, "Who am I on Telegram?".
 
-### From Releases
+## Security notes
 
-#### MacOS
+- `session.json` is a full login to your Telegram account. Anyone who gets the file has access without a password or code. You can end the session in Telegram → Settings → Devices.
+- The AI can read all your chats, save drafts and mark chats as read. It cannot send messages.
+- Build from source yourself; do not use prebuilt binaries you did not audit.
 
-<details>
+## Optional: JSON Schema Version
 
-> **Note:** The commands below install to `/usr/local/bin`. To install elsewhere, replace `/usr/local/bin` with your preferred directory in your PATH.
+Some MCP clients (e.g. VS Code) do not support JSON Schema Draft 2020-12 and will reject tools that use it. Override it with the `--schema-version` flag or the `TG_SCHEMA_VERSION` variable (for example in the `.env` file).
 
-First, download the archive for your architecture:
-
-```bash
-# For Intel Mac (x86_64)
-curl -L -o telegram-mcp.tar.gz https://github.com/dmitriy-fullstack-2010/telegram-mcp/releases/latest/download/telegram-mcp_Darwin_x86_64.tar.gz
-
-# For Apple Silicon (M1/M2)
-curl -L -o telegram-mcp.tar.gz https://github.com/dmitriy-fullstack-2010/telegram-mcp/releases/latest/download/telegram-mcp_Darwin_arm64.tar.gz
-```
-
-Then install the binary:
-
-```bash
-# Extract the binary
-sudo tar xzf telegram-mcp.tar.gz -C /usr/local/bin
-
-# Make it executable
-sudo chmod +x /usr/local/bin/telegram-mcp
-
-# Clean up
-rm telegram-mcp.tar.gz
-```
-</details>
-
-#### Linux
-<details>
-
-> **Note:** The commands below install to `/usr/local/bin`. To install elsewhere, replace `/usr/local/bin` with your preferred directory in your PATH.
-
-First, download the archive for your architecture:
-
-```bash
-# For x86_64 (64-bit)
-curl -L -o telegram-mcp.tar.gz https://github.com/dmitriy-fullstack-2010/telegram-mcp/releases/latest/download/telegram-mcp_Linux_x86_64.tar.gz
-
-# For ARM64
-curl -L -o telegram-mcp.tar.gz https://github.com/dmitriy-fullstack-2010/telegram-mcp/releases/latest/download/telegram-mcp_Linux_arm64.tar.gz
-```
-
-Then install the binary:
-
-```bash
-# Extract the binary
-sudo tar xzf telegram-mcp.tar.gz -C /usr/local/bin
-
-# Make it executable
-sudo chmod +x /usr/local/bin/telegram-mcp
-
-# Clean up
-rm telegram-mcp.tar.gz
-```
-</details>
-
-#### Windows
-
-<details>
-
-#### Windows
-1. Download the latest release for your architecture:
-   - [Windows x64](https://github.com/dmitriy-fullstack-2010/telegram-mcp/releases/latest/download/telegram-mcp_Windows_x86_64.zip)
-   - [Windows ARM64](https://github.com/dmitriy-fullstack-2010/telegram-mcp/releases/latest/download/telegram-mcp_Windows_arm64.zip)
-2. Extract the `.zip` file
-3. Add the extracted directory to your PATH or move `telegram-mcp.exe` to a directory in your PATH
-</details>
-
-### From Source
-
-Requirements:
-- Go 1.24 or later
-- GOBIN in PATH
-
-```bash
-go install github.com/dmitriy-fullstack-2010/telegram-mcp@latest
-```
-
-## Configuration
-
-### Credentials (.env)
-
-Keep your API credentials in a `.env` file instead of the MCP client config:
-
-1. Get the API ID and hash from [Telegram API](https://my.telegram.org/auth)
-2. Create `~/.telegram-mcp/.env` (Windows: `%USERPROFILE%\.telegram-mcp\.env`):
-
-   ```dotenv
-   TG_APP_ID=<your-api-id>
-   TG_API_HASH=<your-api-hash>
-   ```
-
-To use another location, set `TG_ENV_FILE=<path>` (this path is not a secret). Variables that are already set in the real environment take priority over the file. Keep this file private and never commit it.
-
-### Authorization
-
-Before you can use the server, you need to connect to the Telegram API.
-
-1. Make sure the `.env` file above exists.
-2. Run the following command:
-   > __Note:__
-   > If you have 2FA enabled: add --password <2fa_password>
-
-   >  __Note:__
-   > If you want to override existing session: add --new
-
-   ```bash
-   telegram-mcp auth --phone <your-phone-number>
-   ```
-
-   📩 Enter the code you received from Telegram to connect to the API.
-
-3. Done!
-
-### Client Configuration
-
-Example of Configuring Claude Desktop to recognize the Telegram MCP server.
-
-1. Open the Claude Desktop configuration file:
-    - in MacOS, the configuration file is located at `~/Library/Application Support/Claude/claude_desktop_config.json`
-    - in Windows, the configuration file is located at `%APPDATA%\Claude\claude_desktop_config.json`
-
-   > __Note:__
-   > You can also find claude_desktop_config.json inside the settings of Claude Desktop app
-
-2. Add the server configuration (no secrets needed, they come from the `.env` file):
-
-   ```json
-    {
-      "mcpServers": {
-        "telegram": {
-          "command": "telegram-mcp"
-        }
-      }
-    }
-   ```
-
-### JSON Schema Version
-
-Some MCP clients (e.g. VS Code) do not support JSON Schema Draft 2020-12 and will reject tools that use it. You can override the JSON Schema version by setting the `--schema-version` flag or the `TG_SCHEMA_VERSION` environment variable.
-
-Common values:
 | Version | URL |
 |---------|-----|
 | Draft-07 (recommended for VS Code) | `https://json-schema.org/draft-07/schema#` |
 | Draft 2020-12 (default) | `https://json-schema.org/draft/2020-12/schema` |
-
-## Star History
-
-<a href="https://www.star-history.com/#dmitriy-fullstack-2010/telegram-mcp&Date">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=dmitriy-fullstack-2010/telegram-mcp&type=Date&theme=dark" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=dmitriy-fullstack-2010/telegram-mcp&type=Date" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=dmitriy-fullstack-2010/telegram-mcp&type=Date" />
- </picture>
-</a>
