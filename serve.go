@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/chaindead/telegram-mcp/internal/tg"
+	"github.com/dmitriy-fullstack-2010/telegram-mcp/internal/tg"
 	"github.com/invopop/jsonschema"
 
 	mcp "github.com/metoro-io/mcp-golang"

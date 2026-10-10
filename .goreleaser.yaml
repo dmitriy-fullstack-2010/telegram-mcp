@@ -43,7 +43,7 @@ checksum:
 
 brews:
   - name: telegram-mcp
-    homepage: "https://github.com/chaindead/telegram-mcp"
+    homepage: "https://github.com/dmitriy-fullstack-2010/telegram-mcp"
     description: "Telegram MCP server for AI assistants"
     license: "MIT"
     repository:

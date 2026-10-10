@@ -1,9 +1,11 @@
 [![](https://badge.mcpx.dev?type=server 'MCP Server')](https://github.com/punkpeye/awesome-mcp-servers?tab=readme-ov-file#communication)
-[![](https://img.shields.io/badge/OS_Agnostic-Works_Everywhere-purple)](https://github.com/chaindead/telegram-mcp?tab=readme-ov-file#installation)
+[![](https://img.shields.io/badge/OS_Agnostic-Works_Everywhere-purple)](https://github.com/dmitriy-fullstack-2010/telegram-mcp?tab=readme-ov-file#installation)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Visitors](https://api.visitorbadge.io/api/visitors?path=https%3A%2F%2Fgithub.com%2Fchaindead%2Ftelegram-mcp&label=Visitors&labelColor=%23d9e3f0&countColor=%23697689&style=flat&labelStyle=none)](https://visitorbadge.io/status?path=https%3A%2F%2Fgithub.com%2Fchaindead%2Ftelegram-mcp)
 
 # Telegram MCP server
+
+> [!NOTE]
+> This is a personal fork of [chaindead/telegram-mcp](https://github.com/chaindead/telegram-mcp). All credit for the original work goes to its author, [chaindead](https://github.com/chaindead). Distributed under the original MIT license (see [LICENSE](LICENSE)).
 
 The server is a bridge between the Telegram API and the AI assistants and is based on the [Model Context Protocol](https://modelcontextprotocol.io).
 
@@ -126,10 +128,10 @@ First, download the archive for your architecture:
 
 ```bash
 # For Intel Mac (x86_64)
-curl -L -o telegram-mcp.tar.gz https://github.com/chaindead/telegram-mcp/releases/latest/download/telegram-mcp_Darwin_x86_64.tar.gz
+curl -L -o telegram-mcp.tar.gz https://github.com/dmitriy-fullstack-2010/telegram-mcp/releases/latest/download/telegram-mcp_Darwin_x86_64.tar.gz
 
 # For Apple Silicon (M1/M2)
-curl -L -o telegram-mcp.tar.gz https://github.com/chaindead/telegram-mcp/releases/latest/download/telegram-mcp_Darwin_arm64.tar.gz
+curl -L -o telegram-mcp.tar.gz https://github.com/dmitriy-fullstack-2010/telegram-mcp/releases/latest/download/telegram-mcp_Darwin_arm64.tar.gz
 ```
 
 Then install the binary:
@@ -155,10 +157,10 @@ First, download the archive for your architecture:
 
 ```bash
 # For x86_64 (64-bit)
-curl -L -o telegram-mcp.tar.gz https://github.com/chaindead/telegram-mcp/releases/latest/download/telegram-mcp_Linux_x86_64.tar.gz
+curl -L -o telegram-mcp.tar.gz https://github.com/dmitriy-fullstack-2010/telegram-mcp/releases/latest/download/telegram-mcp_Linux_x86_64.tar.gz
 
 # For ARM64
-curl -L -o telegram-mcp.tar.gz https://github.com/chaindead/telegram-mcp/releases/latest/download/telegram-mcp_Linux_arm64.tar.gz
+curl -L -o telegram-mcp.tar.gz https://github.com/dmitriy-fullstack-2010/telegram-mcp/releases/latest/download/telegram-mcp_Linux_arm64.tar.gz
 ```
 
 Then install the binary:
@@ -181,8 +183,8 @@ rm telegram-mcp.tar.gz
 
 #### Windows
 1. Download the latest release for your architecture:
-   - [Windows x64](https://github.com/chaindead/telegram-mcp/releases/latest/download/telegram-mcp_Windows_x86_64.zip)
-   - [Windows ARM64](https://github.com/chaindead/telegram-mcp/releases/latest/download/telegram-mcp_Windows_arm64.zip)
+   - [Windows x64](https://github.com/dmitriy-fullstack-2010/telegram-mcp/releases/latest/download/telegram-mcp_Windows_x86_64.zip)
+   - [Windows ARM64](https://github.com/dmitriy-fullstack-2010/telegram-mcp/releases/latest/download/telegram-mcp_Windows_arm64.zip)
 2. Extract the `.zip` file
 3. Add the extracted directory to your PATH or move `telegram-mcp.exe` to a directory in your PATH
 </details>
@@ -194,7 +196,7 @@ Requirements:
 - GOBIN in PATH
 
 ```bash
-go install github.com/chaindead/telegram-mcp@latest
+go install github.com/dmitriy-fullstack-2010/telegram-mcp@latest
 ```
 
 ## Configuration
@@ -276,10 +278,10 @@ Common values:
 
 ## Star History
 
-<a href="https://www.star-history.com/#chaindead/telegram-mcp&Date">
+<a href="https://www.star-history.com/#dmitriy-fullstack-2010/telegram-mcp&Date">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=chaindead/telegram-mcp&type=Date&theme=dark" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=chaindead/telegram-mcp&type=Date" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=chaindead/telegram-mcp&type=Date" />
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=dmitriy-fullstack-2010/telegram-mcp&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=dmitriy-fullstack-2010/telegram-mcp&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=dmitriy-fullstack-2010/telegram-mcp&type=Date" />
  </picture>
 </a>
