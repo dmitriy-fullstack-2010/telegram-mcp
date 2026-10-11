@@ -15,6 +15,22 @@ import (
 	"github.com/urfave/cli/v3"
 )
 
+const searchDescription = "Search messages in a telegram dialog (group, channel, chat) by text. " +
+	"One request per call. Telegram matches whole words without morphology, so run several short " +
+	"keyword variants (e.g. in Ukrainian and Russian: 'паспорт', 'закордонний', 'загранпаспорт') " +
+	"and use min_date to focus on recent information. Each result has id, reply_to (id of the message " +
+	"it answers) and replies (number of replies). Then call tg_context only for the most relevant ids. " +
+	"If the response has linked_chat, the dialog is a channel and its discussions are in that group: search it too."
+
+const contextDescription = "Rebuild the conversation around messages found by tg_search: the chain of " +
+	"messages they reply to (parents), replies to them and optionally neighbouring messages (around). " +
+	"Up to 10 ids per call, batched to keep Telegram requests low; prefer one call with several ids over " +
+	"many calls. Use around (e.g. 5-10) when answers may have been posted without using reply."
+
+const topicsDescription = "List topics of a forum group (a group split into topics). One request. " +
+	"Messages in search results have topic (topic id); pass topic to tg_search to search inside one topic. " +
+	"Messages of the General topic have no topic id."
+
 func serve(ctx context.Context, cmd *cli.Command) error {
 	appID := cmd.Int("app-id")
 	appHash := cmd.String("api-hash")
@@ -70,6 +86,25 @@ func serve(ctx context.Context, cmd *cli.Command) error {
 
 		log.Info().RawJSON("answer", []byte(answer.Content[0].TextContent.Text)).Msg("Check GetHistory: OK")
 
+		if chat := os.Getenv("TG_TEST_SEARCH_CHAT"); chat != "" {
+			answer, err = client.Search(tg.SearchArguments{Name: chat, Query: os.Getenv("TG_TEST_SEARCH_QUERY"), Limit: 5})
+			if err != nil {
+				return fmt.Errorf("search: %w", err)
+			}
+
+			log.Info().RawJSON("answer", []byte(answer.Content[0].TextContent.Text)).Msg("Check Search: OK")
+
+			var found tg.SearchResponse
+			if err := json.Unmarshal([]byte(answer.Content[0].TextContent.Text), &found); err == nil && len(found.Messages) > 0 {
+				answer, err = client.GetContext(tg.ContextArguments{Name: chat, IDs: []int{found.Messages[0].ID}, Around: 3})
+				if err != nil {
+					return fmt.Errorf("context: %w", err)
+				}
+
+				log.Info().RawJSON("answer", []byte(answer.Content[0].TextContent.Text)).Msg("Check Context: OK")
+			}
+		}
+
 		answer, err = client.SendDraft(tg.DraftArguments{Name: os.Getenv("TG_TEST_USERNAME"), Text: "test draft"})
 		if err != nil {
 			log.Err(err).Msg("Check SendDraft: FAIL")
@@ -100,6 +135,21 @@ func serve(ctx context.Context, cmd *cli.Command) error {
 	err = server.RegisterTool("tg_dialog", "Get messages of telegram dialog", client.GetHistory)
 	if err != nil {
 		return fmt.Errorf("register dialogs tool: %w", err)
+	}
+
+	err = server.RegisterTool("tg_search", searchDescription, client.Search)
+	if err != nil {
+		return fmt.Errorf("register search tool: %w", err)
+	}
+
+	err = server.RegisterTool("tg_context", contextDescription, client.GetContext)
+	if err != nil {
+		return fmt.Errorf("register context tool: %w", err)
+	}
+
+	err = server.RegisterTool("tg_topics", topicsDescription, client.GetTopics)
+	if err != nil {
+		return fmt.Errorf("register topics tool: %w", err)
 	}
 
 	err = server.RegisterTool("tg_send", "Send draft message to dialog", client.SendDraft)

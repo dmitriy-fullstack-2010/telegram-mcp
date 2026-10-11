@@ -18,6 +18,7 @@ The server is a bridge between the Telegram API and AI assistants and is based o
   - [2. Add credentials](#2-add-credentials)
   - [3. Log in to Telegram](#3-log-in-to-telegram)
   - [4. Add to Claude Desktop](#4-add-to-claude-desktop)
+- [Rate limiting](#rate-limiting)
 - [Security notes](#security-notes)
 - [Optional: JSON Schema Version](#optional-json-schema-version)
 
@@ -28,10 +29,14 @@ Tools exposed to the AI assistant:
 - `tg_me` — get current account information
 - `tg_dialogs` — list dialogs, optionally only unread ones
 - `tg_dialog` — read messages from a specific dialog
+- `tg_search` — search messages in a group/channel by keywords (optionally by date range or author); returns message ids, `reply_to`, reply counts and `t.me` links. For a channel with a discussion group, also returns `linked_chat`
+- `tg_topics` — list topics of a forum group; pass a topic id to `tg_search` to search inside one topic
+- `tg_context` — rebuild the conversation around found messages: the chain of replied-to messages, the replies to them and optionally neighbouring messages (`around`)
 - `tg_send` — save a **draft** message in a dialog (it never sends anything)
 - `tg_read` — mark a dialog as read
 
 Example prompts:
+- "In the group <name> find how Ukrainians renew a passport in Spain over the last year; restore the replies and give me a step-by-step summary with links"
 - "Summarize all my unread Telegram messages"
 - "Draft a polite response to the last message in [chat]"
 - "Check if there are any unanswered questions in my chats"
@@ -84,6 +89,12 @@ Open `%APPDATA%\Claude\claude_desktop_config.json` and add:
 ```
 
 If the file already has `mcpServers`, add only the `"telegram"` entry inside it. Then fully quit and reopen Claude Desktop and ask, for example, "Who am I on Telegram?".
+
+## Rate limiting
+
+To avoid account restrictions, all Telegram API requests go through a shared limiter (1 request/second, burst 3; override with `TG_RATE_LIMIT=<requests per second>` in `.env`). A `FLOOD_WAIT` of up to 30 seconds is waited out and retried once; longer ones are returned as an error so the assistant stops. Resolved usernames are cached for the lifetime of the server. A typical question costs 3–5 `tg_search` calls plus 1–3 `tg_context` calls.
+
+Telegram search matches whole words without morphology, so the assistant is instructed to try several short keyword variants (e.g. Ukrainian and Russian spellings).
 
 ## Security notes
 

@@ -26,7 +26,7 @@ func (c *Client) ReadHistory(args ReadArguments) (*mcp.ToolResponse, error) {
 	if err := client.Run(ctx, func(ctx context.Context) error {
 		api := client.API()
 
-		inputPeer, err := getInputPeerFromName(ctx, api, args.Name)
+		inputPeer, err := c.resolvePeer(ctx, api, args.Name)
 		if err != nil {
 			return fmt.Errorf("get inputPeer from name: %w", err)
 		}

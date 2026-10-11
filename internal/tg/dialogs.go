@@ -34,9 +34,14 @@ type DialogsArguments struct {
 }
 
 type MessageInfo struct {
+	ID       int    `json:"id,omitempty"`
 	Who      string `json:"who,omitempty"`
 	When     string `json:"when"`
 	Text     string `json:"text,omitempty"`
+	ReplyTo  int    `json:"reply_to,omitempty"`
+	Replies  int    `json:"replies,omitempty"`
+	Topic    int    `json:"topic,omitempty"`
+	Link     string `json:"link,omitempty"`
 	IsUnread bool   `json:"is_unread,omitempty"`
 	ts       int
 }

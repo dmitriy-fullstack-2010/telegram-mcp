@@ -25,7 +25,7 @@ func (c *Client) SendDraft(args DraftArguments) (*mcp.ToolResponse, error) {
 	if err := client.Run(context.Background(), func(ctx context.Context) (err error) {
 		api := client.API()
 
-		inputPeer, err := getInputPeerFromName(ctx, api, args.Name)
+		inputPeer, err := c.resolvePeer(ctx, api, args.Name)
 		if err != nil {
 			return fmt.Errorf("get inputPeer from name: %w", err)
 		}
